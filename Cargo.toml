@@ -8,7 +8,7 @@ edition = "2018"
 accumulator = { git = "https://github.com/kobigurk/cpsnarks-set-accumulator" }
 quick-error = "1.2.3"
 rug = "1.7.0"
-ark-bls12-381 = { git = "https://github.com/arkworks-rs/curves" }
+ark-bls12-381 = "0.4.0"
 merlin = "2.0.0"
 rand = { version = "0.7" }
 ark-ff = { git = "https://github.com/arkworks-rs/algebra" }
