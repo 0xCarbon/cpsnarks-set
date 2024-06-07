@@ -22,7 +22,7 @@ use ark_ec::{
     AffineCurve, PairingEngine, ProjectiveCurve,
 };
 
-use blake2::{Blake2s, Digest};
+use blake2::{Blake2s256, Digest};
 use ark_crypto_primitives::{prf::blake2s::constraints::evaluate_blake2s};
 use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisError};
 use ark_r1cs_std::{
@@ -277,7 +277,7 @@ impl<E: PairingEngine, P: HashToPrimeHashParameters> HashToPrimeProtocol<E::G1Pr
                 .into_iter()
                 .rev()
                 .collect::<Vec<_>>();
-            let mut hasher = Blake2s::default();
+            let mut hasher = Blake2s256::default(); //Was purely blake2
             hasher.update(&bytes_to_hash);
             let hash = hasher.finalize();
             let hash_big_endian = hash.into_iter().rev().collect::<Vec<_>>();

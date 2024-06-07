@@ -1,9 +1,7 @@
 use accumulator::group::Rsa2048;
 use accumulator::{group::Group, AccumulatorWithoutHashToPrime};
-use algebra::{
-    bls12_381::{Bls12_381, Fr, G1Projective},
-    PrimeField,
-};
+use ark_bls12_381::{Bls12_381, Fr, G1Projective};
+use ark_ff::PrimeField;
 use cpsnarks_set::{
     commitments::Commitment,
     parameters::Parameters,

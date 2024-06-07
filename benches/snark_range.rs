@@ -1,5 +1,5 @@
 use accumulator::group::Rsa2048;
-use algebra::bls12_381::{Bls12_381, G1Projective};
+use ark_bls12_381::{Bls12_381, Fr, G1Projective};
 use cpsnarks_set::commitments::Commitment;
 use cpsnarks_set::{
     parameters::Parameters,
