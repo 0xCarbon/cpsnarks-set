@@ -5,9 +5,9 @@ authors = ["Kobi Gurkan <kobigurk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-accumulator = { git = "https://github.com/kobigurk/cpsnarks-set-accumulator" }
+accumulator = { git = "https://github.com/0xCarbon/cpsnarks-set-accumulator", branch = "serialize" }
 quick-error = "1.2.3"
-rug = "1.7.0"
+rug = {version =  "1.7.0", features = ["serde"] } 
 ark-bls12-381 = { version = "^0.3.0" }
 merlin = "2.0.0"
 rand = { version = "0.8" }
@@ -23,6 +23,7 @@ bulletproofs = { git = "https://github.com/dalek-cryptography/bulletproofs", bra
 digest = "0.8.1"
 blake2 = ">= 0.8.1"
 cfg-if = "0.1"
+serde = { version = "1.0", features = ["derive"] }
 
 [features]
 dalek = ["curve25519-dalek", "bulletproofs"]

@@ -9,6 +9,9 @@ use channel::{RootProverChannel, RootVerifierChannel};
 use rug::rand::MutRandState;
 use rug::Integer;
 
+use serde::{Serialize, Deserialize};
+
+
 pub mod channel;
 pub mod transcript;
 
@@ -53,7 +56,7 @@ pub struct Message3 {
     pub s_delta: Integer,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize,Deserialize)]
 pub struct Proof<G: ConvertibleUnknownOrderGroup> {
     pub message1: Message1<G>,
     pub message2: Message2<G>,
