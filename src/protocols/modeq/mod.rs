@@ -15,6 +15,8 @@ use rand::{CryptoRng, RngCore};
 use rug::{rand::MutRandState, Integer};
 
 use serde::{Serialize, Deserialize};
+use serde_with::serde_as;
+use crate::utils::curve::arkworks::SerdeAs;
 
 pub mod channel;
 pub mod transcript;
@@ -44,10 +46,12 @@ pub struct Message1<G: ConvertibleUnknownOrderGroup, P: CurvePointProjective> {
     pub alpha2: <PedersenCommitment<P> as Commitment>::Instance,
 }
 
+#[serde_as]
 #[derive(Clone,Serialize,Deserialize)]
 pub struct Message2<P: CurvePointProjective> {
     pub s_e: Integer,
     pub s_r: Integer,
+    #[serde_as(as = "SerdeAs")]
     pub s_r_q: P::ScalarField,
 }
 

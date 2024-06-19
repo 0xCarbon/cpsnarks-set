@@ -32,13 +32,13 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub w: G::Elem,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize,Deserialize)]
 pub struct Message1<G: ConvertibleUnknownOrderGroup> {
     pub c_w: G::Elem,
     pub c_r: <IntegerCommitment<G> as Commitment>::Instance,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize,Deserialize)]
 pub struct Message2<G: ConvertibleUnknownOrderGroup> {
     pub alpha1: <IntegerCommitment<G> as Commitment>::Instance,
     pub alpha2: <IntegerCommitment<G> as Commitment>::Instance,
@@ -46,7 +46,7 @@ pub struct Message2<G: ConvertibleUnknownOrderGroup> {
     pub alpha4: G::Elem,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize,Deserialize)]
 pub struct Message3 {
     pub s_e: Integer,
     pub s_r: Integer,
