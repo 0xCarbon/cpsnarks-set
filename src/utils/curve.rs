@@ -3,7 +3,6 @@
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
 
-use serde::{Serialize, Deserialize};
 use ark_serialize::{CanonicalSerialize,CanonicalDeserialize};
 
 quick_error! {
@@ -29,9 +28,7 @@ where
     fn rand<R: RngCore + CryptoRng>(rng: &mut R) -> Self;
 }
 
-pub trait CurvePointProjective
-where
-    Self: Clone + PartialEq,
+pub trait CurvePointProjective: Clone + PartialEq + CanonicalSerialize + CanonicalDeserialize
 {
     type ScalarField: Field + CanonicalSerialize + CanonicalDeserialize;
 
@@ -49,7 +46,6 @@ pub mod arkworks {
     use ark_ec::ProjectiveCurve;
     use ark_ff::{BigInteger, FpParameters, PrimeField};
     use ark_serialize::{CanonicalSerialize, SerializationError,CanonicalDeserialize};
-    use serde_with::{DeserializeAs, SerializeAs};
 
     use rand::{CryptoRng, RngCore};
     use rug::Integer;
@@ -96,37 +92,7 @@ pub mod arkworks {
         }
     }
 
-        // Define a compatibilization between CanonicalSerialize/CanonicalDeserialize with serde methods
-        pub struct SerdeAs;
-
-        impl<T> SerializeAs<T> for SerdeAs
-        where
-            T: CanonicalSerialize,
-        {
-            fn serialize_as<S>(val: &T, serializer: S) -> Result<S::Ok, S::Error>
-            where
-                S: serde::Serializer,
-            {
-                let mut bytes = vec![];
-                val.serialize(&mut bytes)
-                    .map_err(serde::ser::Error::custom)?;
-    
-                serde_with::Bytes::serialize_as(&bytes, serializer)
-            }
-        }
-    
-        impl<'de, T> DeserializeAs<'de, T> for SerdeAs
-        where
-            T: CanonicalDeserialize,
-        {
-            fn deserialize_as<D>(deserializer: D) -> Result<T, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                let bytes: Vec<u8> = serde_with::Bytes::deserialize_as(deserializer)?;
-                T::deserialize(&mut &bytes[..]).map_err(serde::de::Error::custom)
-            }
-        }
+        
 
     impl<P: ProjectiveCurve> CurvePointProjective for P {
         type ScalarField = P::ScalarField;

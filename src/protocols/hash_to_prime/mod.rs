@@ -1,6 +1,6 @@
 //! Implements an abstract hash-to-prime protocol, which can also be just a range proof.
 use crate::{
-    commitments::{pedersen::PedersenCommitment, Commitment},
+    commitments::{pedersen::PedersenCommitment,pedersen::SerializableCurvePointProjective, Commitment},
     parameters::Parameters,
     protocols::{ProofError, SetupError, VerificationError},
     utils::curve::CurvePointProjective,
@@ -8,6 +8,8 @@ use crate::{
 use channel::{HashToPrimeProverChannel, HashToPrimeVerifierChannel};
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
+
+use serde::{Deserialize, Serialize};
 
 pub mod channel;
 pub mod transcript;
@@ -90,8 +92,8 @@ pub trait CRSSize {
 }
 
 pub trait HashToPrimeProtocol<P: CurvePointProjective> {
-    type Proof: Clone;
-    type Parameters: Clone;
+    type Proof: Clone + Serialize + for<'de> Deserialize<'de>;
+    type Parameters: Clone + Serialize + for<'de> Deserialize<'de>;
 
     fn from_crs(crs: &CRSHashToPrime<P, Self>) -> Self
     where
@@ -139,7 +141,7 @@ impl<P: CurvePointProjective, HP: HashToPrimeProtocol<P>> Clone for CRSHashToPri
 }
 
 pub struct Statement<P: CurvePointProjective> {
-    pub c_e_q: <PedersenCommitment<P> as Commitment>::Instance,
+    pub c_e_q: SerializableCurvePointProjective<P>,
 }
 
 pub struct Witness {

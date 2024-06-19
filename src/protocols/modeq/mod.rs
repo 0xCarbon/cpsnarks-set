@@ -16,7 +16,7 @@ use rug::{rand::MutRandState, Integer};
 
 use serde::{Serialize, Deserialize};
 use serde_with::serde_as;
-use crate::utils::curve::arkworks::SerdeAs;
+use crate::utils::SerdeAs;
 
 pub mod channel;
 pub mod transcript;
@@ -140,10 +140,10 @@ impl<G: ConvertibleUnknownOrderGroup, P: CurvePointProjective> Protocol<G, P> {
             .pedersen_commitment_parameters
             .commit(&s_e_mod_q, &s_r_q_int)?;
         let c_big = integer_to_bigint_mod_q::<P>(&c)?;
-        let commitment1_extra = statement.c_e_q.mul(&c_big);
-        let expected_alpha2 = commitment1.add(&commitment1_extra);
+        let commitment1_extra = statement.c_e_q.0.mul(&c_big);
+        let expected_alpha2 = commitment1.0.add(&commitment1_extra);
 
-        if expected_alpha1 == message1.alpha1 && expected_alpha2 == message1.alpha2 {
+        if expected_alpha1 == message1.alpha1 && expected_alpha2 == message1.alpha2.0 {
             Ok(())
         } else {
             Err(VerificationError::VerificationFailed)

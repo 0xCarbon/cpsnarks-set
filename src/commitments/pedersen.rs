@@ -5,6 +5,18 @@ use crate::utils::{curve::CurvePointProjective, integer_to_bigint};
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
 
+use crate::utils::SerdeAs;
+use serde::{Serialize, Deserialize};
+use serde_with::serde_as;
+use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
+
+#[serde_as]
+#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct SerializableCurvePointProjective<P: CurvePointProjective>(
+    #[serde_as(as = "SerdeAs")] pub P
+);
+
+
 #[derive(Clone)]
 pub struct PedersenCommitment<P: CurvePointProjective> {
     pub g: P,
@@ -27,7 +39,7 @@ impl<P: CurvePointProjective> PedersenCommitment<P> {
     }
 }
 impl<P: CurvePointProjective> Commitment for PedersenCommitment<P> {
-    type Instance = P;
+    type Instance = SerializableCurvePointProjective<P>;
 
     fn commit(
         &self,
@@ -36,7 +48,7 @@ impl<P: CurvePointProjective> Commitment for PedersenCommitment<P> {
     ) -> Result<Self::Instance, CommitmentError> {
         let v = integer_to_bigint::<P>(value);
         let r = integer_to_bigint::<P>(randomness);
-        Ok(self.g.mul(&v).add(&self.h.mul(&r)))
+        Ok(SerializableCurvePointProjective(self.g.mul(&v).add(&self.h.mul(&r))))
     }
 
     fn open(
@@ -49,7 +61,7 @@ impl<P: CurvePointProjective> Commitment for PedersenCommitment<P> {
             .g
             .mul(&integer_to_bigint::<P>(value))
             .add(&self.h.mul(&integer_to_bigint::<P>(randomness)));
-        if expected == *commitment {
+        if expected == commitment.0 {
             Ok(())
         } else {
             Err(CommitmentError::WrongOpening)

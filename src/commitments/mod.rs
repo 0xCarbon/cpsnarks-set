@@ -4,6 +4,8 @@ use rug::Integer;
 
 pub mod integer;
 pub mod pedersen;
+use serde::{Deserialize, Serialize};
+
 
 quick_error! {
     #[derive(Debug)]
@@ -17,7 +19,7 @@ quick_error! {
 }
 
 pub trait Commitment {
-    type Instance;
+    type Instance: Serialize + for<'de> Deserialize<'de>;
 
     fn commit(
         &self,
