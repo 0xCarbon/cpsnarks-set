@@ -50,7 +50,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     .crs;
     println!(
         "crs size: {:?}",
-        crs.crs_hash_to_prime.hash_to_prime_parameters.crs_size()
+        crs.crs_hash_to_prime.hash_to_prime_parameters.prv_key.crs_size()
     );
     let protocol = Protocol::<
         Rsa2048,

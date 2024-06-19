@@ -11,12 +11,10 @@ use serde_with::serde_as;
 use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
 
 #[serde_as]
-#[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct SerializableCurvePointProjective<P: CurvePointProjective>(
     #[serde_as(as = "SerdeAs")] pub P
 );
-
-
 #[derive(Clone)]
 pub struct PedersenCommitment<P: CurvePointProjective> {
     pub g: P,
