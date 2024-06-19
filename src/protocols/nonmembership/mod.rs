@@ -28,6 +28,8 @@ use rand::{CryptoRng, RngCore};
 use rug::rand::MutRandState;
 use rug::Integer;
 
+use serde::{Serialize, Deserialize};
+
 pub mod channel;
 pub mod transcript;
 
@@ -61,6 +63,7 @@ pub struct Protocol<
     pub crs: CRS<G, P, HP>,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Statement<G: ConvertibleUnknownOrderGroup, P: CurvePointProjective> {
     pub c_p: G::Elem,
     pub c_e_q: <PedersenCommitment<P> as Commitment>::Instance,
@@ -73,6 +76,7 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub b: Integer,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Proof<
     G: ConvertibleUnknownOrderGroup,
     P: CurvePointProjective,

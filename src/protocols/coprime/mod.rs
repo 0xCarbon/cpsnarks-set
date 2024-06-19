@@ -9,6 +9,8 @@ use channel::{CoprimeProverChannel, CoprimeVerifierChannel};
 use rug::rand::MutRandState;
 use rug::Integer;
 
+use serde::{Serialize, Deserialize};
+
 pub mod channel;
 pub mod transcript;
 
@@ -30,7 +32,7 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub b: Integer,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Message1<G: ConvertibleUnknownOrderGroup> {
     pub c_a: G::Elem,
     pub c_r_a: <IntegerCommitment<G> as Commitment>::Instance,
@@ -38,7 +40,7 @@ pub struct Message1<G: ConvertibleUnknownOrderGroup> {
     pub c_rho_b_cap: <IntegerCommitment<G> as Commitment>::Instance,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Message2<G: ConvertibleUnknownOrderGroup> {
     pub alpha2: <IntegerCommitment<G> as Commitment>::Instance,
     pub alpha3: <IntegerCommitment<G> as Commitment>::Instance,
@@ -48,7 +50,7 @@ pub struct Message2<G: ConvertibleUnknownOrderGroup> {
     pub alpha7: <IntegerCommitment<G> as Commitment>::Instance,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Message3 {
     pub s_b: Integer,
     pub s_e: Integer,
@@ -61,7 +63,7 @@ pub struct Message3 {
     pub s_delta: Integer,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Proof<G: ConvertibleUnknownOrderGroup> {
     pub message1: Message1<G>,
     pub message2: Message2<G>,
