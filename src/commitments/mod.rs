@@ -24,7 +24,7 @@ quick_error! {
 }
 
 pub trait Commitment {
-    type Instance: Serialize + for<'de> Deserialize<'de>;
+    type Instance: Serialize +for<'de> Deserialize<'de>;
 
     fn commit(
         &self,

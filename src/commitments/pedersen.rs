@@ -19,6 +19,7 @@ use ark_serialize::Read;
 pub struct SerializableCurvePointProjective<P: CurvePointProjective>(
     #[serde_as(as = "SerdeAs")] pub P
 );
+
 #[derive(Clone, CanonicalSerialize, CanonicalDeserialize)]
 pub struct PedersenCommitment<P: CurvePointProjective> {
     pub g: P,

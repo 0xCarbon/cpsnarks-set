@@ -29,6 +29,8 @@ use rug::rand::MutRandState;
 use rug::Integer;
 
 use serde::{Serialize, Deserialize};
+use serde_with::serde_as;
+use crate::utils::SerdeAs;
 
 pub mod channel;
 pub mod transcript;
@@ -63,9 +65,11 @@ pub struct Protocol<
     pub crs: CRS<G, P, HP>,
 }
 
+#[serde_as]
 #[derive(Serialize, Deserialize)]
 pub struct Statement<G: ConvertibleUnknownOrderGroup, P: CurvePointProjective> {
     pub c_p: G::Elem,
+    // #[serde_as(as = "SerdeAs")]
     pub c_e_q: <PedersenCommitment<P> as Commitment>::Instance,
 }
 
@@ -75,6 +79,7 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub w: G::Elem,
 }
 
+#[serde_as]
 #[derive(Serialize, Deserialize)]
 pub struct Proof<
     G: ConvertibleUnknownOrderGroup,
@@ -84,6 +89,7 @@ pub struct Proof<
     pub c_e: <IntegerCommitment<G> as Commitment>::Instance,
     pub proof_root: RootProof<G>,
     pub proof_modeq: ModEqProof<G, P>,
+    #[serde_as(as = "SerdeAs")]
     pub proof_hash_to_prime: HP::Proof,
 }
 
