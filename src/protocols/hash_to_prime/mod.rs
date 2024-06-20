@@ -10,9 +10,9 @@ use channel::{HashToPrimeProverChannel, HashToPrimeVerifierChannel};
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
 
-use serde::{Serialize, Deserialize};
-use serde_with::serde_as;
 use crate::utils::SerdeAs;
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 
 pub mod channel;
 pub mod transcript;
@@ -146,10 +146,12 @@ impl<P: CurvePointProjective, HP: HashToPrimeProtocol<P>> Clone for CRSHashToPri
     }
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Statement<P: CurvePointProjective> {
     pub c_e_q: <PedersenCommitment<P> as Commitment>::Instance,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Witness {
     pub e: Integer,
     pub r_q: Integer,

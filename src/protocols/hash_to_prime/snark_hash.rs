@@ -43,37 +43,37 @@ use ark_serialize::SerializationError;
 use ark_serialize::Read;
 
 // Update the Proof type to use the custom serialization and deserialization
-#[serde_as]
-#[derive(Clone,Serialize, Deserialize)]
-pub struct Proof<E: PairingEngine> {
-    #[serde_as(as = "SerdeAs")]
-    pub proof: legogro16::Proof<E>,
-}
+// #[serde_as]
+// #[derive(Clone,Serialize, Deserialize)]
+// pub struct Proof<E: PairingEngine> {
+//     #[serde_as(as = "SerdeAs")]
+//     pub proof: legogro16::Proof<E>,
+// }
 
 // Update the Proof type to use the custom serialization and deserialization
-#[serde_as]
-#[derive(Clone,Serialize, Deserialize)]
-pub struct ProvingKey<E: PairingEngine> {
-    #[serde_as(as = "SerdeAs")]
-    pub prv_key: legogro16::ProvingKey<E>,
-}
+// #[serde_as]
+// #[derive(Clone,Serialize, Deserialize)]
+// pub struct ProvingKey<E: PairingEngine> {
+//     #[serde_as(as = "SerdeAs")]
+//     pub prv_key: legogro16::ProvingKey<E>,
+// }
 
-impl<E: PairingEngine> CanonicalSerialize for ProvingKey<E> {
-    fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
-        self.prv_key.serialize(writer)
-    }
+// impl<E: PairingEngine> CanonicalSerialize for ProvingKey<E> {
+//     fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
+//         self.prv_key.serialize(writer)
+//     }
 
-    fn serialized_size(&self) -> usize {
-        self.prv_key.serialized_size()
-    }
-}
+//     fn serialized_size(&self) -> usize {
+//         self.prv_key.serialized_size()
+//     }
+// }
 
-impl<E: PairingEngine> CanonicalDeserialize for ProvingKey<E> {
-    fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
-        let prv_key = legogro16::ProvingKey::deserialize(reader)?;
-        Ok(ProvingKey { prv_key })
-    }
-}
+// impl<E: PairingEngine> CanonicalDeserialize for ProvingKey<E> {
+//     fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
+//         let prv_key = legogro16::ProvingKey::deserialize(reader)?;
+//         Ok(ProvingKey { prv_key })
+//     }
+// }
 
 // #[serde_as]
 // #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -192,7 +192,7 @@ impl<E: PairingEngine, P: HashToPrimeHashParameters> ConstraintSynthesizer<E::Fr
 }
 
 // #[serde_as]
-#[derive(Serialize, Deserialize)]
+// #[derive(Serialize, Deserialize)]
 pub struct Protocol<E: PairingEngine, P: HashToPrimeHashParameters> {
     // #[serde_as(as = "SerdeAs")]
     pub crs: CRSHashToPrime<E::G1Projective, Self>,
