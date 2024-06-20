@@ -8,14 +8,18 @@ use rug::Integer;
 use crate::utils::SerdeAs;
 use serde::{Serialize, Deserialize};
 use serde_with::serde_as;
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
+use ark_serialize::{CanonicalSerialize,CanonicalDeserialize};
+use ark_serialize::Write;
+use ark_serialize::SerializationError;
+use ark_serialize::Read;
+
 
 #[serde_as]
 #[derive(Copy, Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct SerializableCurvePointProjective<P: CurvePointProjective>(
     #[serde_as(as = "SerdeAs")] pub P
 );
-#[derive(Clone)]
+#[derive(Clone, CanonicalSerialize, CanonicalDeserialize)]
 pub struct PedersenCommitment<P: CurvePointProjective> {
     pub g: P,
     pub h: P,

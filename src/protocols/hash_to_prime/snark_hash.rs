@@ -37,6 +37,11 @@ use serde::{Serialize, Deserialize};
 use serde_with::serde_as;
 use crate::utils::SerdeAs;
 
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use ark_serialize::Write;
+use ark_serialize::SerializationError;
+use ark_serialize::Read;
+
 // Update the Proof type to use the custom serialization and deserialization
 #[serde_as]
 #[derive(Clone,Serialize, Deserialize)]
@@ -52,6 +57,30 @@ pub struct ProvingKey<E: PairingEngine> {
     #[serde_as(as = "SerdeAs")]
     pub prv_key: legogro16::ProvingKey<E>,
 }
+
+impl<E: PairingEngine> CanonicalSerialize for ProvingKey<E> {
+    fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
+        self.prv_key.serialize(writer)
+    }
+
+    fn serialized_size(&self) -> usize {
+        self.prv_key.serialized_size()
+    }
+}
+
+impl<E: PairingEngine> CanonicalDeserialize for ProvingKey<E> {
+    fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
+        let prv_key = legogro16::ProvingKey::deserialize(reader)?;
+        Ok(ProvingKey { prv_key })
+    }
+}
+
+// #[serde_as]
+// #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+// pub struct SerdeG1Projective<E: PairingEngine> {
+//     #[serde_as(as = "SerdeAs")]
+//     pub inner: E::G1Projective,
+// }
 
 pub trait HashToPrimeHashParameters {
     const MESSAGE_SIZE: u16;
@@ -162,7 +191,10 @@ impl<E: PairingEngine, P: HashToPrimeHashParameters> ConstraintSynthesizer<E::Fr
     }
 }
 
+// #[serde_as]
+#[derive(Serialize, Deserialize)]
 pub struct Protocol<E: PairingEngine, P: HashToPrimeHashParameters> {
+    // #[serde_as(as = "SerdeAs")]
     pub crs: CRSHashToPrime<E::G1Projective, Self>,
     parameters_type: std::marker::PhantomData<P>,
 }

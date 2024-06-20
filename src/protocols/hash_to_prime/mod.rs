@@ -1,15 +1,18 @@
 //! Implements an abstract hash-to-prime protocol, which can also be just a range proof.
 use crate::{
-    commitments::{pedersen::PedersenCommitment,pedersen::SerializableCurvePointProjective, Commitment},
+    commitments::{pedersen::PedersenCommitment, Commitment},
     parameters::Parameters,
     protocols::{ProofError, SetupError, VerificationError},
     utils::curve::CurvePointProjective,
 };
+use ark_serialize::CanonicalDeserialize;
 use channel::{HashToPrimeProverChannel, HashToPrimeVerifierChannel};
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
 
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
+use serde_with::serde_as;
+use crate::utils::SerdeAs;
 
 pub mod channel;
 pub mod transcript;
@@ -92,8 +95,8 @@ pub trait CRSSize {
 }
 
 pub trait HashToPrimeProtocol<P: CurvePointProjective> {
-    type Proof: Clone + Serialize + for<'de> Deserialize<'de>;
-    type Parameters: Clone + Serialize + for<'de> Deserialize<'de>;
+    type Proof: Clone;
+    type Parameters: Clone + CanonicalSerialize + CanonicalDeserialize;
 
     fn from_crs(crs: &CRSHashToPrime<P, Self>) -> Self
     where
@@ -124,9 +127,13 @@ pub trait HashToPrimeProtocol<P: CurvePointProjective> {
     fn hash_to_prime(&self, e: &Integer) -> Result<(Integer, u64), HashToPrimeError>;
 }
 
+#[serde_as]
+#[derive(Serialize, Deserialize)]
 pub struct CRSHashToPrime<P: CurvePointProjective, HP: HashToPrimeProtocol<P>> {
     pub parameters: Parameters,
+    #[serde_as(as = "SerdeAs")]
     pub pedersen_commitment_parameters: PedersenCommitment<P>,
+    #[serde_as(as = "SerdeAs")]
     pub hash_to_prime_parameters: HP::Parameters,
 }
 
@@ -141,7 +148,7 @@ impl<P: CurvePointProjective, HP: HashToPrimeProtocol<P>> Clone for CRSHashToPri
 }
 
 pub struct Statement<P: CurvePointProjective> {
-    pub c_e_q: SerializableCurvePointProjective<P>,
+    pub c_e_q: <PedersenCommitment<P> as Commitment>::Instance,
 }
 
 pub struct Witness {
