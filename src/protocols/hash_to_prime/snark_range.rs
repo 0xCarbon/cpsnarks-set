@@ -119,8 +119,8 @@ impl<E: PairingEngine> HashToPrimeProtocol<E::G1Projective> for Protocol<E> {
         let base_one = E::G1Projective::rand(rng);
         let pedersen_bases = vec![
             base_one,
-            pedersen_commitment_parameters.g,
-            pedersen_commitment_parameters.h,
+            pedersen_commitment_parameters.g.0,
+            pedersen_commitment_parameters.h.0,
         ];
         Ok(legogro16::generate_random_parameters(
             c,

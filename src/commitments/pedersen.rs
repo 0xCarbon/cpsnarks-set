@@ -20,24 +20,25 @@ pub struct SerializableCurvePointProjective<P: CurvePointProjective>(
     #[serde_as(as = "SerdeAs")] pub P
 );
 
-#[derive(Clone, CanonicalSerialize, CanonicalDeserialize)]
+// #[derive(Clone, CanonicalSerialize, CanonicalDeserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PedersenCommitment<P: CurvePointProjective> {
-    pub g: P,
-    pub h: P,
+    pub g: SerializableCurvePointProjective<P>,
+    pub h: SerializableCurvePointProjective<P>,
 }
 
 impl<P: CurvePointProjective> PedersenCommitment<P> {
     pub fn setup<R: RngCore + CryptoRng>(rng: &mut R) -> PedersenCommitment<P> {
         PedersenCommitment {
-            g: P::rand(rng),
-            h: P::rand(rng),
+            g: SerializableCurvePointProjective(P::rand(rng)),
+            h: SerializableCurvePointProjective(P::rand(rng)),
         }
     }
 
     pub fn new(g: &P, h: &P) -> PedersenCommitment<P> {
         PedersenCommitment {
-            g: g.clone(),
-            h: h.clone(),
+            g: SerializableCurvePointProjective(g.clone()),
+            h: SerializableCurvePointProjective(h.clone()),
         }
     }
 }
@@ -51,7 +52,7 @@ impl<P: CurvePointProjective> Commitment for PedersenCommitment<P> {
     ) -> Result<Self::Instance, CommitmentError> {
         let v = integer_to_bigint::<P>(value);
         let r = integer_to_bigint::<P>(randomness);
-        Ok(SerializableCurvePointProjective(self.g.mul(&v).add(&self.h.mul(&r))))
+        Ok(SerializableCurvePointProjective(self.g.0.mul(&v).add(&self.h.0.mul(&r))))
     }
 
     fn open(
@@ -61,9 +62,9 @@ impl<P: CurvePointProjective> Commitment for PedersenCommitment<P> {
         randomness: &Integer,
     ) -> Result<(), CommitmentError> {
         let expected = self
-            .g
+            .g.0
             .mul(&integer_to_bigint::<P>(value))
-            .add(&self.h.mul(&integer_to_bigint::<P>(randomness)));
+            .add(&self.h.0.mul(&integer_to_bigint::<P>(randomness)));
         if expected == commitment.0 {
             Ok(())
         } else {

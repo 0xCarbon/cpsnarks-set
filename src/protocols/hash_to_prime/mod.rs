@@ -131,7 +131,6 @@ pub trait HashToPrimeProtocol<P: CurvePointProjective> {
 #[derive(Serialize, Deserialize)]
 pub struct CRSHashToPrime<P: CurvePointProjective, HP: HashToPrimeProtocol<P>> {
     pub parameters: Parameters,
-    #[serde_as(as = "SerdeAs")]
     pub pedersen_commitment_parameters: PedersenCommitment<P>,
     #[serde_as(as = "SerdeAs")]
     pub hash_to_prime_parameters: HP::Parameters,
