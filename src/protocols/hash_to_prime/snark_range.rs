@@ -1,7 +1,7 @@
 //! LegoGroth16-based range proof.
 
 use crate::{
-    commitments::pedersen::PedersenCommitment,
+    commitments::pedersen::{PedersenCommitment,SerializableCurvePointProjective},
     parameters::Parameters,
     protocols::{
         hash_to_prime::{
@@ -32,38 +32,38 @@ use ark_serialize::Write;
 use ark_serialize::SerializationError;
 use ark_serialize::Read;
 
-// Update the Proof type to use the custom serialization and deserialization
-#[serde_as]
-#[derive(Clone,Serialize, Deserialize)]
-pub struct Proof<E: PairingEngine> {
-    #[serde_as(as = "SerdeAs")]
-    pub proof: legogro16::Proof<E>,
-}
+// // Update the Proof type to use the custom serialization and deserialization
+// #[serde_as]
+// #[derive(Clone,Serialize, Deserialize)]
+// pub struct Proof<E: PairingEngine> {
+//     #[serde_as(as = "SerdeAs")]
+//     pub proof: legogro16::Proof<E>,
+// }
 
-// Update the Proof type to use the custom serialization and deserialization
-#[serde_as]
-#[derive(Clone,Serialize, Deserialize)]
-pub struct ProvingKey<E: PairingEngine> {
-    #[serde_as(as = "SerdeAs")]
-    pub prv_key: legogro16::ProvingKey<E>,
-}
+// // Update the Proof type to use the custom serialization and deserialization
+// #[serde_as]
+// #[derive(Clone,Serialize, Deserialize)]
+// pub struct ProvingKey<E: PairingEngine> {
+//     #[serde_as(as = "SerdeAs")]
+//     pub prv_key: legogro16::ProvingKey<E>,
+// }
 
-impl<E: PairingEngine> CanonicalSerialize for ProvingKey<E> {
-    fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
-        self.prv_key.serialize(writer)
-    }
+// impl<E: PairingEngine> CanonicalSerialize for ProvingKey<E> {
+//     fn serialize<W: Write>(&self, writer: W) -> Result<(), SerializationError> {
+//         self.prv_key.serialize(writer)
+//     }
 
-    fn serialized_size(&self) -> usize {
-        self.prv_key.serialized_size()
-    }
-}
+//     fn serialized_size(&self) -> usize {
+//         self.prv_key.serialized_size()
+//     }
+// }
 
-impl<E: PairingEngine> CanonicalDeserialize for ProvingKey<E> {
-    fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
-        let prv_key = legogro16::ProvingKey::deserialize(reader)?;
-        Ok(ProvingKey { prv_key })
-    }
-}
+// impl<E: PairingEngine> CanonicalDeserialize for ProvingKey<E> {
+//     fn deserialize<R: Read>(reader: R) -> Result<Self, SerializationError> {
+//         let prv_key = legogro16::ProvingKey::deserialize(reader)?;
+//         Ok(ProvingKey { prv_key })
+//     }
+// }
 
 pub struct HashToPrimeCircuit<E: PairingEngine> {
     required_bit_size: u16,
@@ -98,8 +98,8 @@ pub struct Protocol<E: PairingEngine> {
 }
 
 impl<E: PairingEngine> HashToPrimeProtocol<E::G1Projective> for Protocol<E> {
-    type Proof = Proof<E>;
-    type Parameters = ProvingKey<E>;
+    type Proof = legogro16::Proof<E>;
+    type Parameters = legogro16::ProvingKey<E>;
 
     fn from_crs(crs: &CRSHashToPrime<E::G1Projective, Self>) -> Protocol<E> {
         Protocol {
@@ -122,17 +122,14 @@ impl<E: PairingEngine> HashToPrimeProtocol<E::G1Projective> for Protocol<E> {
             pedersen_commitment_parameters.g,
             pedersen_commitment_parameters.h,
         ];
-        let legogro16_proving_key = legogro16::generate_random_parameters(
+        Ok(legogro16::generate_random_parameters(
             c,
             &pedersen_bases
                 .into_iter()
                 .map(|p| p.into_affine())
                 .collect::<Vec<_>>(),
             rng,
-        )?;
-        Ok(ProvingKey {
-            prv_key: legogro16_proving_key,
-        })
+        )?)
     }
 
     fn prove<R: Rng, C: HashToPrimeVerifierChannel<E::G1Projective, Self>>(
@@ -150,16 +147,13 @@ impl<E: PairingEngine> HashToPrimeProtocol<E::G1Projective> for Protocol<E> {
         };
         let v = E::Fr::rand(rng);
         let link_v = integer_to_bigint_mod_q::<E::G1Projective>(&witness.r_q.clone())?;
-        let legogro16_proof = legogro16::create_random_proof::<E, _, _>(
+        let proof = legogro16::create_random_proof::<E, _, _>(
             c,
             v,
             link_v,
-            &self.crs.hash_to_prime_parameters.prv_key, // Access the `prv_key` field
+            &self.crs.hash_to_prime_parameters,
             rng,
         )?;
-        let proof = Proof {
-            proof: legogro16_proof,
-        };
         verifier_channel.send_proof(&proof)?;
         Ok(())
     }
@@ -170,19 +164,18 @@ impl<E: PairingEngine> HashToPrimeProtocol<E::G1Projective> for Protocol<E> {
         statement: &Statement<E::G1Projective>,
     ) -> Result<(), VerificationError> {
         let proof = prover_channel.receive_proof()?;
-        let legogro16_proof = &proof.proof;
-        let pvk = legogro16::prepare_verifying_key(&self.crs.hash_to_prime_parameters.prv_key.vk);
-        if !legogro16::verify_proof(&pvk, legogro16_proof)? {
+        let pvk = legogro16::prepare_verifying_key(&self.crs.hash_to_prime_parameters.vk);
+        if !legogro16::verify_proof(&pvk, &proof)? {
             return Err(VerificationError::VerificationFailed);
         }
-        let proof_link_d_without_one = legogro16_proof
+        let proof_link_d_without_one = proof
             .link_d
             .into_projective()
-            .sub(&self.crs.hash_to_prime_parameters.prv_key.vk.link_bases[0].into_projective());
-        if statement.c_e_q.0 != proof_link_d_without_one {
+            .sub(&self.crs.hash_to_prime_parameters.vk.link_bases[0].into_projective());
+        if statement.c_e_q != SerializableCurvePointProjective(proof_link_d_without_one) {
             return Err(VerificationError::VerificationFailed);
         }
-    
+
         Ok(())
     }
 

@@ -6,6 +6,11 @@ pub mod integer;
 pub mod pedersen;
 use serde::{Deserialize, Serialize};
 
+use ark_serialize::{CanonicalSerialize,CanonicalDeserialize};
+use ark_serialize::Write;
+use ark_serialize::SerializationError;
+use ark_serialize::Read;
+
 
 quick_error! {
     #[derive(Debug)]

@@ -44,7 +44,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     .crs;
     println!(
         "crs size: {:?}",
-        crs.crs_hash_to_prime.hash_to_prime_parameters.prv_key.crs_size()
+        crs.crs_hash_to_prime.hash_to_prime_parameters.crs_size()
     );
     let protocol = Protocol::<Rsa2048, G1Projective, HPProtocol<Bls12_381>>::from_crs(&crs);
 

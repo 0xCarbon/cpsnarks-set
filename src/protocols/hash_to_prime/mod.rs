@@ -95,7 +95,7 @@ pub trait CRSSize {
 }
 
 pub trait HashToPrimeProtocol<P: CurvePointProjective> {
-    type Proof: Clone;
+    type Proof: Clone + CanonicalSerialize + CanonicalDeserialize;
     type Parameters: Clone + CanonicalSerialize + CanonicalDeserialize;
 
     fn from_crs(crs: &CRSHashToPrime<P, Self>) -> Self
