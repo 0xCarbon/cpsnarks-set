@@ -2,6 +2,7 @@
 
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
+use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
 
 quick_error! {
     #[derive(Debug)]
@@ -28,9 +29,9 @@ where
 
 pub trait CurvePointProjective
 where
-    Self: Clone + PartialEq,
+    Self: Clone + PartialEq + CanonicalSerialize + CanonicalDeserialize,
 {
-    type ScalarField: Field;
+    type ScalarField: Field + CanonicalSerialize + CanonicalDeserialize;
 
     fn mul(&self, s: &Self::ScalarField) -> Self;
     fn add(&self, other: &Self) -> Self;

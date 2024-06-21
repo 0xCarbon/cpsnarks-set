@@ -12,6 +12,9 @@ use rug::Integer;
 pub mod channel;
 pub mod transcript;
 
+use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
+use serde::{Deserialize,Serialize};
+
 #[derive(Clone)]
 pub struct CRSRoot<G: ConvertibleUnknownOrderGroup> {
     // G contains the information about Z^*_N
@@ -29,13 +32,13 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub w: G::Elem,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Deserialize, Serialize)]
 pub struct Message1<G: ConvertibleUnknownOrderGroup> {
     pub c_w: G::Elem,
     pub c_r: <IntegerCommitment<G> as Commitment>::Instance,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Message2<G: ConvertibleUnknownOrderGroup> {
     pub alpha1: <IntegerCommitment<G> as Commitment>::Instance,
     pub alpha2: <IntegerCommitment<G> as Commitment>::Instance,
@@ -43,7 +46,7 @@ pub struct Message2<G: ConvertibleUnknownOrderGroup> {
     pub alpha4: G::Elem,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Message3 {
     pub s_e: Integer,
     pub s_r: Integer,
@@ -53,7 +56,7 @@ pub struct Message3 {
     pub s_delta: Integer,
 }
 
-#[derive(Clone)]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Proof<G: ConvertibleUnknownOrderGroup> {
     pub message1: Message1<G>,
     pub message2: Message2<G>,

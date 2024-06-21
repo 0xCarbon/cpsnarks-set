@@ -31,6 +31,11 @@ use rug::Integer;
 pub mod channel;
 pub mod transcript;
 
+use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
+use serde::{Deserialize,Serialize};
+use serde_with::serde_as;
+use crate::utils::SerdeAs;
+
 pub struct CRS<G: ConvertibleUnknownOrderGroup, P: CurvePointProjective, HP: HashToPrimeProtocol<P>>
 {
     // G contains the information about Z^*_N
@@ -61,8 +66,11 @@ pub struct Protocol<
     pub crs: CRS<G, P, HP>,
 }
 
+#[serde_as]
+#[derive(Clone,Serialize, Deserialize)]
 pub struct Statement<G: ConvertibleUnknownOrderGroup, P: CurvePointProjective> {
     pub c_p: G::Elem,
+    #[serde_as(as = "SerdeAs")]
     pub c_e_q: <PedersenCommitment<P> as Commitment>::Instance,
 }
 
@@ -72,6 +80,7 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub w: G::Elem,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Proof<
     G: ConvertibleUnknownOrderGroup,
     P: CurvePointProjective,
