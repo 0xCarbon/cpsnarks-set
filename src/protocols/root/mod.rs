@@ -12,7 +12,6 @@ use rug::Integer;
 pub mod channel;
 pub mod transcript;
 
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
 use serde::{Deserialize,Serialize};
 
 #[derive(Clone)]

@@ -18,7 +18,7 @@ cfg_if::cfg_if! {
         pub mod snark_range;
 
         use ark_ec::{PairingEngine, AffineCurve};
-        use ark_serialize::CanonicalSerialize;
+        use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
 
         impl<E: PairingEngine> CRSSize for legogro16::ProvingKey::<E> {
             fn crs_size(&self) -> (usize, usize) {
@@ -90,8 +90,8 @@ pub trait CRSSize {
 }
 
 pub trait HashToPrimeProtocol<P: CurvePointProjective> {
-    type Proof: Clone;
-    type Parameters: Clone;
+    type Proof: Clone + CanonicalDeserialize + CanonicalSerialize;
+    type Parameters: Clone + CanonicalDeserialize + CanonicalSerialize;
 
     fn from_crs(crs: &CRSHashToPrime<P, Self>) -> Self
     where

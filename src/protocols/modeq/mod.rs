@@ -14,7 +14,6 @@ use channel::{ModEqProverChannel, ModEqVerifierChannel};
 use rand::{CryptoRng, RngCore};
 use rug::{rand::MutRandState, Integer};
 
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
 use serde::{Deserialize,Serialize};
 use serde_with::serde_as;
 use crate::utils::SerdeAs;

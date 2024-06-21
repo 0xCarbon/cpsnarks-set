@@ -2,7 +2,7 @@
 
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
+use ark_serialize::{CanonicalSerialize, CanonicalDeserialize};
 
 quick_error! {
     #[derive(Debug)]

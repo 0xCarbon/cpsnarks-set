@@ -31,7 +31,6 @@ use rug::Integer;
 pub mod channel;
 pub mod transcript;
 
-use ark_serialize::{CanonicalSerialize, CanonicalDeserialize, Read, Write, SerializationError};
 use serde::{Deserialize,Serialize};
 use serde_with::serde_as;
 use crate::utils::SerdeAs;
@@ -80,6 +79,7 @@ pub struct Witness<G: ConvertibleUnknownOrderGroup> {
     pub w: G::Elem,
 }
 
+#[serde_as]
 #[derive(Serialize, Deserialize)]
 pub struct Proof<
     G: ConvertibleUnknownOrderGroup,
@@ -89,6 +89,7 @@ pub struct Proof<
     pub c_e: <IntegerCommitment<G> as Commitment>::Instance,
     pub proof_root: RootProof<G>,
     pub proof_modeq: ModEqProof<G, P>,
+    #[serde_as(as = "SerdeAs")]
     pub proof_hash_to_prime: HP::Proof,
 }
 
