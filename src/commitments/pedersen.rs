@@ -5,7 +5,9 @@ use crate::utils::{curve::CurvePointProjective, integer_to_bigint};
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
 
-#[derive(Clone)]
+use ark_serialize::{CanonicalSerialize,CanonicalDeserialize,Write,Read,SerializationError};
+
+#[derive(Clone,CanonicalSerialize,CanonicalDeserialize)]
 pub struct PedersenCommitment<P: CurvePointProjective> {
     pub g: P,
     pub h: P,

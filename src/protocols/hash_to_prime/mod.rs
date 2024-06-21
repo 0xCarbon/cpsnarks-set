@@ -9,6 +9,10 @@ use channel::{HashToPrimeProverChannel, HashToPrimeVerifierChannel};
 use rand::{CryptoRng, RngCore};
 use rug::Integer;
 
+use serde::{Deserialize,Serialize};
+use serde_with::serde_as;
+use crate::utils::SerdeAs;
+
 pub mod channel;
 pub mod transcript;
 
@@ -122,9 +126,13 @@ pub trait HashToPrimeProtocol<P: CurvePointProjective> {
     fn hash_to_prime(&self, e: &Integer) -> Result<(Integer, u64), HashToPrimeError>;
 }
 
+#[serde_as]
+#[derive(Serialize, Deserialize)]
 pub struct CRSHashToPrime<P: CurvePointProjective, HP: HashToPrimeProtocol<P>> {
     pub parameters: Parameters,
+    #[serde_as(as = "SerdeAs")]
     pub pedersen_commitment_parameters: PedersenCommitment<P>,
+    #[serde_as(as = "SerdeAs")]
     pub hash_to_prime_parameters: HP::Parameters,
 }
 

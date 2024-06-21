@@ -2,7 +2,8 @@
 
 use crate::utils::curve::Field;
 use std::fmt;
-#[derive(Clone, Debug)]
+use serde::{Deserialize,Serialize};
+#[derive(Clone, Debug,Deserialize,Serialize)]
 pub struct Parameters {
     /// Desired security level. It's an upper bound rather than the final
     /// security level.

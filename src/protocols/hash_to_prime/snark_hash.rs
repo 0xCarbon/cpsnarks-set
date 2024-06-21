@@ -23,7 +23,7 @@ use ark_ec::{
 };
 
 use blake2::{Blake2s256, Digest};
-use ark_crypto_primitives::{prf::blake2s::constraints::evaluate_blake2s};
+use ark_crypto_primitives::prf::blake2s::constraints::evaluate_blake2s;
 use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystemRef, SynthesisError};
 use ark_r1cs_std::{
     alloc::{AllocationMode, AllocVar}, bits::ToBitsGadget, boolean::Boolean, eq::EqGadget, fields::fp::FpVar,
@@ -32,6 +32,7 @@ use ark_r1cs_std::{
 use rand::Rng;
 use rug::{integer::IsPrime, Integer};
 use std::ops::{Neg, Sub};
+
 
 pub trait HashToPrimeHashParameters {
     const MESSAGE_SIZE: u16;
@@ -141,6 +142,7 @@ impl<E: PairingEngine, P: HashToPrimeHashParameters> ConstraintSynthesizer<E::Fr
         Ok(())
     }
 }
+
 
 pub struct Protocol<E: PairingEngine, P: HashToPrimeHashParameters> {
     pub crs: CRSHashToPrime<E::G1Projective, Self>,
