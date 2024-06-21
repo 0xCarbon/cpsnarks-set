@@ -33,6 +33,8 @@ use rand::Rng;
 use rug::{integer::IsPrime, Integer};
 use std::ops::{Neg, Sub};
 
+use serde::{Deserialize,Serialize};
+
 
 pub trait HashToPrimeHashParameters {
     const MESSAGE_SIZE: u16;
@@ -143,7 +145,7 @@ impl<E: PairingEngine, P: HashToPrimeHashParameters> ConstraintSynthesizer<E::Fr
     }
 }
 
-
+#[derive(Deserialize,Serialize)]
 pub struct Protocol<E: PairingEngine, P: HashToPrimeHashParameters> {
     pub crs: CRSHashToPrime<E::G1Projective, Self>,
     parameters_type: std::marker::PhantomData<P>,

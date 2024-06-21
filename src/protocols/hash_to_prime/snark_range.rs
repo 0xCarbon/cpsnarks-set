@@ -23,6 +23,9 @@ use rand::Rng;
 use rug::Integer;
 use std::ops::Sub;
 
+use serde::{Deserialize,Serialize};
+
+
 pub struct HashToPrimeCircuit<E: PairingEngine> {
     required_bit_size: u16,
     value: Option<E::Fr>,
@@ -51,6 +54,7 @@ impl<E: PairingEngine> ConstraintSynthesizer<E::Fr> for HashToPrimeCircuit<E> {
     }
 }
 
+#[derive(Deserialize,Serialize)]
 pub struct Protocol<E: PairingEngine> {
     pub crs: CRSHashToPrime<E::G1Projective, Self>,
 }
